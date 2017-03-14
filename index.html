@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			*{padding: 0;margin: 0;}
+			body{width:980px;margin: 0 auto;text-align: center;}
+			.tabs li{list-style: none;}
+			.active{background: #aaa;}
+			.tab-title li{width:150px;height:30px;line-height: 30px;float: left;text-align: center;border: 1px solid #999;border-collapse:collapse;}
+			.tabContent{clear: both;border: 1px solid #ccc;}
+		</style>
+	</head>
+	<body>
+		<div ng-app="app" ng-controller="myCtr">
+			
+			<tabs active-index="activeIndex">
+				<tabs-item tab-title="123456">4566</tabs-item>
+				<tabs-item tab-title="456789">5623</tabs-item>
+			</tabs>
+		</div>
+		
+		<script type="text/javascript" src="js/angular.min.js" ></script>
+		<script>
+			var app=angular.module("app",[]);
+				app.controller("myCtr",function($scope){
+					$scope.activeIndex=0;
+				});
+				app.directive("tabs",function(){
+					return {
+						restrict: 'EA',
+						scope:{
+							activeIndex:"="
+						},
+						replace:true,
+						template:"<div class='tabs'><div class='tab-title'><ul><li ng-click='selectFunc($index)' ng-class='{active:$index==selectIndex}' ng-repeat='item in scopes'>{{item.tabTitle}}</li></ul></div><div class='tabContent'><ul ng-transclude></ul></div></div>",
+						transclude:true,
+						controller:function($scope,$element){
+							$scope.selectIndex=0;
+							$scope.scopes=[];
+							$scope.selectFunc=function(myindex){
+								$scope.selectIndex=myindex;
+								$scope.scopes.forEach(function(value,index){
+									if(myindex==index){
+										value.selected=true;
+									}else{
+										value.selected=false;
+									}
+								});
+							};
+							
+							$scope.$watch("activeIndex",function(newValue,oldValue){
+								$scope.selectFunc($scope.activeIndex);
+							});
+
+							this.addScope=function(scope){
+								$scope.scopes.push(scope);
+							}
+						},
+						link:function(scope,ele,attr,mycontroller){
+							if(scope.scopes.length>0&&scope.scopes[scope.activeIndex]){
+								scope.scopes[scope.activeIndex].selected=true;
+							}
+						}
+					}
+				})
+				.directive("tabsItem",function(){
+					return {
+						restrict: 'EA',
+						scope:{tabTitle:"@"},
+						replace:true,
+						require:"?^tabs",
+						template:"<li ng-transclude class='tab-item-li' ng-show='selected'></li>",
+						transclude:true,
+						controller:function($scope,$attrs){
+							$scope.selected=false;
+						},
+						link:function(scope,ele,attr,controller){
+							controller.addScope(scope);
+						}
+					}
+				})
+				
+				
+				
+		</script>
+	</body>
+</html>
