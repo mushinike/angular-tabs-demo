@@ -25,7 +25,7 @@
 		<script>
 			var app=angular.module("app",[]);
 				app.controller("myCtr",function($scope){
-					$scope.activeIndex=0;
+					$scope.activeIndex=1;
 				});
 				app.directive("tabs",function(){
 					return {
@@ -59,9 +59,7 @@
 							}
 						},
 						link:function(scope,ele,attr,mycontroller){
-							if(scope.scopes.length>0&&scope.scopes[scope.activeIndex]){
-								scope.scopes[scope.activeIndex].selected=true;
-							}
+							scope.selectFunc(scope.activeIndex);
 						}
 					}
 				})
@@ -70,7 +68,6 @@
 						restrict: 'EA',
 						scope:{tabTitle:"@"},
 						replace:true,
-						require:"?^tabs",
 						template:"<li ng-transclude class='tab-item-li' ng-show='selected'></li>",
 						transclude:true,
 						controller:function($scope,$attrs){
